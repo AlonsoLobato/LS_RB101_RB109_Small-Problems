@@ -593,7 +593,60 @@ Zeppo
 #### School answer
 - The answer lies in the fact that the first `each` loop simply copies a bunch of references from `array1` to `array2`. When that first loop completes, both arrays not only contain the same values, they contain the same String objects. If you modify one of those Strings, that modification will show up in both Arrays.
 
+- So, the key here is that both arrays, `array1` and `arra2`, are two variables pointing at two different objects (we can prove this by doing `array1.object_id` and `array2.object_id` to see they have different id's), but both of them include *subvariables* (each element in the array) that point the same collection of objects in memory (again, we can prove that by doing `array1.map {|x| x.object_id}` and `array2.map {|x| x.object_id}` to see that element of each array have same id's, so they are the same) so, when we apply a change in one or several of the objects which the element variables point to, that change shows up in both array variables (because their content is the same!)
 
+- **`array1` and `array2` are referencing different objects in memory. But elements of both arrays are pointing to the same String objects, so a mutating change in an element of `array1`, is reflected in `array2`, as the elements they contain are the same.**
+
+#### Further exploration
+
+To avoid these side-effects, we can try invoking non-destructive methods whenever possible.
+
+##### How can we do that in this example?
+
+In this particular example, we infer that the requirements are to,
+
+1. copy the elements of `array1` into `array2`;
+2. change certain elements in `array1` according to the first letter of that element;
+3. all whilst ensuring that these changes do not impact `array2`.
+
+```ruby
+array1 = %w(Moe Larry Curly Shemp Harpo Chico Groucho Zeppo)
+array2 = []
+array1.each { |value| array2 << value }
+
+# reassigning `array1` to the return value of the `#map` invocation allows us  
+# to store in `array1`, an updated version of `array1` without having to rely
+# on the destructive `#upcase!` method.
+array1 = array1.map do |value| 
+  value.start_with?('C', 'S') ? value.upcase : value
+end
+```
+
+##### Did we just copy references, duplicate, mutate...?
+
+By analyzing the `object_id` of every element in `array1` and `array2`, we see that the elements in `array1` and `array2` are, for the most part, still referencing the same String objects except in those cases where the block provided to the `#map` invocation returned a new uppercase `String` object.
+
+```ruby
+array1.each { |x| puts x.object_id }
+# => 17945320
+# => 17945300
+# => 17944940 a new `String` object 'CURLY'
+# => 17944880 a new `String` object 'SHEMP'
+# => 17945240 
+# => 17944760 a new `String` object 'CHICO'
+# => 17945200
+# => 17945180
+
+array2.each { |x| puts x.object_id }
+# => 17945320
+# => 17945300
+# => 17945280 
+# => 17945260 
+# => 17945240 
+# => 17945220 
+# => 17945200
+# => 17945180
+```
 
 =======
 
