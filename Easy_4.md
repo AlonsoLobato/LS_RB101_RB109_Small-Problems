@@ -59,8 +59,6 @@ end
 
 ### Exersise 2: What Century is That?
 
-*This exercise was solved with Garry*
-
 Write a method that takes a year as input and returns the century. The return value should be a string that begins with the century number, and ends with st, nd, rd, or th as appropriate for that number.
 
 New centuries begin in years that end with 01. So, the years 1901-2000 comprise the 20th century.
@@ -161,8 +159,6 @@ p century(20000) == '200th'
 ------------------------
 
 ### Exersise 3: Leap Years (Part 1)
-
-**Solved with Nico; done on our own with a 15 minutes timer and solutions and process shared after**
 
 In the modern era under the Gregorian Calendar, leap years occur in every year that is evenly divisible by 4, unless the year is also divisible by 100. If the year is evenly divisible by 100, then it is not a leap year unless the year is evenly divisible by 400.
 
@@ -310,16 +306,39 @@ end
 ```
 ------------------------
 
-### Exersise 4:
+### Exersise 4: Leap Years (Part 2)
 
+```ruby
+def leap_year?(int)
+  
+  if int <= 1752
+    return true if int % 4 == 0 
+    false
+  else
+    return true if int % 4 == 0 && int % 100 != 0
+    return true if int % 100 == 0 && int % 400 == 0
+    false
+  end
+end
 
-
+p leap_year?(2016) == true
+p leap_year?(2015) == false
+p leap_year?(2100) == false
+p leap_year?(2400) == true
+p leap_year?(240000) == true
+p leap_year?(240001) == false
+p leap_year?(2000) == true
+p leap_year?(1900) == false
+p leap_year?(1752) == true
+p leap_year?(1700) == true
+p leap_year?(1) == false
+p leap_year?(100) == true
+p leap_year?(400) == true
+```
 
 ------------------------
 
 ### Exersise 5: Multiples of 3 and 5
-
-**Solved with Garry; done on our own with a 12 minutes timer and solutions and process shared after**
 
 Write a method that searches for all multiples of 3 or 5 that lie between 1 and some other number, and then computes the sum of those multiples. For instance, if the supplied number is 20, the result should be 98 (3 + 5 + 6 + 9 + 10 + 12 + 15 + 18 + 20).
 
@@ -408,8 +427,6 @@ end
 ------------------------
 
 ### Exersise 6: Running Totals
-
-**Solved with Nico; done on our own with a 12 minutes timer and solutions and process shared after**
 
 Write a method that takes an Array of numbers, and returns an Array with the same number of elements, and each element has the running total from the original Array.
 

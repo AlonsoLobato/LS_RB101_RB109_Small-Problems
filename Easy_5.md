@@ -4,8 +4,6 @@
 
 ### Exersise 1: ASCII String Value
 
-**Solved with Nico; done on our own with a 15 minutes timer and solutions and process shared after**
-
 Write a method that determines and returns the ASCII string value of a string that is passed in as an argument. The ASCII string value is the sum of the ASCII values of every character in the string. (You may use String#ord to determine the ASCII value of a character.)
 
 Examples
@@ -68,8 +66,6 @@ end
 ------------------------
 
 ### Exersise 2: After Midnight (Part 1)
-
-**Solved with Nico; done on our own with a 15 minutes timer and solutions and process shared after**
 
 The time of day can be represented as the number of minutes before or after midnight. If the number of minutes is positive, the time is after midnight. If the number of minutes is negative, the time is before midnight.
 
@@ -268,8 +264,6 @@ end
 
 ### Exersise 3: After Midnight (Part 2)
 
-**Solved with Nico both coding together**
-
 As seen in the previous exercise, the time of day can be represented as the number of minutes before or after midnight. If the number of minutes is positive, the time is after midnight. If the number of minutes is negative, the time is before midnight.
 
 Write two methods that each take a time of day in 24 hour format, and return the number of minutes before and after midnight, respectively. Both methods should return a value in the range 0..1439.
@@ -333,8 +327,6 @@ p before_midnight('27:73')
 ------------------------
 
 ### Exersise 4: Letter Swap
-
-**Solved by myself in 50 minutes**
 
 ----------------------INSTRUCTIONS-----------------------------------
 Given a string of words separated by spaces, write a method that takes this  string of words and returns a string in which the first and last letters of  every word are swapped.
@@ -415,7 +407,6 @@ p swap('Abcde') == 'ebcdA'
 p swap('a') == 'a'
 ```
 
-
 ### Nico's solution
 ```ruby
 def swap(string)
@@ -429,7 +420,7 @@ end
 ```
 ------------------------
 
-### Exersise 5: Clean up the words ==> TO BE FINISHED
+### Exersise 5: Clean up the words 
 
 ----------------------INSTRUCTIONS-----------------------------------
 Given a string that consists of some words (all lowercased) and an assortment of non-alphabetic characters, 
@@ -555,4 +546,369 @@ end
 ```ruby
 p "---what's my +*& line?".gsub(/[^a-z]+/, " ")
 #=> " what s my line "
+```
+
+### Alonso on March 8
+```ruby
+def cleanup(string)
+  arr_char = string.chars
+  
+  clean = arr_char.map do |char|
+    char.gsub(/[^a-z]/, ' ')
+  end
+
+  p clean 
+  
+  copy = clean.dup
+  counter = 0
+  copy.each_with_index do |_, index|
+    if copy[index] == ' ' && copy[index + 1] == ' '
+      clean.delete_at(index - counter)
+      counter += 1
+    end
+  end
+
+  clean.join
+end
+
+p cleanup("---what's my +*& line?") #== ' what s my line '
+```
+
+#### Notes:
+- The counter variable that is used to delete elements from the clean array marks the index element to remove from the original in coparison with the copy. In some iterations we are deleting elements from the original so we use counter to adjust the index we need to delete next.
+
+------------------------
+
+### Exersise 6: Letter Counter (Part 1)
+
+----------------------INSTRUCTIONS-----------------------------------
+Write a method that takes a string with one or more space separated words and returns a hash that shows the number of words of different sizes.
+
+Words consist of any string of characters that do not include a space.
+
+-------------------------PROBLEM--------------------------------------
+Input: String (words separated by spaces)
+
+Output: Hash, where
+  - keys are number of chars in each substring of different length 
+  - values are the number of times a substring of that length appears in string
+
+--------------------------RULES-----------------------------------------
+Explicit:
+  - words don't include spaces, if so it'll be considered a separate word
+Implicit:
+  - if input string is empty, return emtpy hash
+  - input string is made of words (substrings) of consecutive valid chars
+  - valid chars are alpha and non-alpha chars
+  - if a word includes or end with a non-alpha ('end.'), the non-alpha is part of the word and counts a one char
+  - count chars case insensitive (Albatros --> 8 chars | albatros --> 8 chars )
+  - returning hash must be in ascending order
+
+-------------------------EXAMPLES--------------------------------------
+word_sizes('Four score and seven.') == { 3 => 1, 4 => 1, 5 => 1, 6 => 1 }
+  - Four --> 4 characters
+  - score --> 5 characters
+  - and --> 3 characters
+  - seven. --> 6 characters
+  --> resulting hash: 1 word of 3 chars, 1 word of 4 chars, 1 word of 5 chars, 1 word of 6 chars
+
+word_sizes('Hey diddle diddle, the cat and the fiddle!') == { 3 => 5, 6 => 1, 7 => 2 }
+word_sizes("What's up doc?") == { 6 => 1, 2 => 1, 4 => 1 }
+word_sizes('') == {}
+
+---------------------------ALGORITHM-----------------------------------
+- Convert input into an array of words (split method)
+- Create an empty hash
+- Iterate the array
+- Count number of chars in first word in arr and create a key in new hash with that number
+  - set value to 1
+- Count num of chars of second word, if a key with that number exist in hash
+  - increment the value + 1
+  - otherwise, create a new key with that number and set value to 1
+- Keep counting until the end of array
+
+- Return the hash
+
+```ruby
+def word_sizes(string)
+  return {} if string.empty?
+
+  word_arr = string.split(' ')               # ["Four", "score", "and", "seven."]
+
+  hash = word_arr.each_with_object({}) do |word, hash|
+    if hash[word.size]
+      hash[word.size] += 1
+    else
+      hash[word.size] = 1
+    end
+  end
+
+  hash.sort.to_h
+end
+
+p word_sizes('Four score and seven.') == { 3 => 1, 4 => 1, 5 => 1, 6 => 1 }
+p word_sizes('Hey diddle diddle, the cat and the fiddle!') == { 3 => 5, 6 => 1, 7 => 2 }
+p word_sizes("What's up doc?") == { 6 => 1, 2 => 1, 4 => 1 }
+p word_sizes('') == {}
+```
+
+------------------------
+
+### Exersise 7: Letter Counter (Part 2)
+
+----------------------INSTRUCTIONS-----------------------------------
+Modify the word_sizes method from the previous exercise to exclude non-letters when determining word size. 
+For instance, the length of "it's" is 3, not 4.
+-------------------------PROBLEM--------------------------------------
+Input: String
+
+Output: Hash where
+  - keys are the size of the words in input string
+  - values are the number of times a word of same size appears in input string
+  
+--------------------------RULES-----------------------------------------
+Explicit:
+- count number of chars (size) in substrings of input string
+- don't count non-alphabetical characters
+Implicit:
+- if input string is empty, return an empty hash
+- don't consider chars case ('Bee' --> 3 chars | 'bee' --> 3 chars)
+- returning hash in ascending order
+
+-------------------------EXAMPLES--------------------------------------
+word_sizes('Four score and seven.') == { 3 => 1, 4 => 1, 5 => 2 }
+  - Four --> 4 chars
+  - score --> 5 chars
+  - and --> 3 chars
+  - seven --> 5 chars (notice the dot isn't counted)
+  - hash: 1 word of 3 chars; 1 word of 4 chars; 2 words of 5 chars
+word_sizes('Hey diddle diddle, the cat and the fiddle!') == { 3 => 5, 6 => 3 }
+word_sizes("What's up doc?") == { 5 => 1, 2 => 1, 3 => 1 }
+word_sizes('') == {}
+
+---------------------------ALGORITHM-----------------------------------
+- clean up input string by removing non-alpha characters
+- extract each substringn as element of array
+- iterate array and create a hash (each_with_object) where
+  - key is the size of a substring
+  - value is 1
+  - if another substring of same size appears, update the corresponging key to += 1
+
+```ruby
+def word_sizes(string)
+  return {} if string.empty?
+
+  string.gsub!(/[^a-z ]/i, '')
+
+  hash = string.split(' ').each_with_object(Hash.new(0)) do |word, hash|
+    hash[word.size] += 1
+  end
+
+  hash.sort.to_h
+end
+
+p word_sizes('Four score and seven.') == { 3 => 1, 4 => 1, 5 => 2 }
+p word_sizes('Hey diddle diddle, the cat and the fiddle!') == { 3 => 5, 6 => 3 }
+p word_sizes("What's up doc?") == { 5 => 1, 2 => 1, 3 => 1 }
+p word_sizes('') == {}
+```
+
+------------------------
+
+### Exersise 8: Alphabetical Numbers
+
+----------------------INSTRUCTIONS-----------------------------------
+Write a method that takes an Array of Integers between 0 and 19, and returns an Array of those Integers sorted based on the English words for each number:
+
+zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen
+
+-------------------------PROBLEM--------------------------------------
+Input: Array of integers (from 0 to 19)
+
+Output: Array with same elements sorted according to their names in English
+
+--------------------------RULES-----------------------------------------
+Explicit:
+  - sort elements by alphabetical correspondence of number 1 --> one, 4 --> four (4 goes before 1)
+
+Implicit:
+
+-------------------------EXAMPLES--------------------------------------
+alphabetic_number_sort((0..19).to_a) == [
+  8, 18, 11, 15, 5, 4, 14, 9, 19, 1, 7, 17,
+  6, 16, 10, 13, 3, 12, 2, 0
+]
+
+---------------------------ALGORITHM-----------------------------------
+- Create a structure that determines the alphabetical representation of numbers from 0 to 19: hash
+- iterate given string
+  - use alphabetical structure (hash) to determine the alpabetical representation of each number
+  - use that string representation to order the elements
+  - use alphabetical structure (hash) to convert back the alpabetical representation to number, preserving the order  
+
+```ruby
+NUM_TO_ALPHA = { 0=>'zero', 1=>'one', 2=>'two', 3 =>'three', 4=>'four', 5=>'five', 6=>'six', 7=>'seven', 8=>'eight',          9=>'nine', 10=>'ten', 11=>'eleven', 12=>'twelve', 13=>'thirteen', 14=>'fourteen', 15=>'fifteen', 16=>'sixteen', 17=>'seventeen', 18=>'eighteen', 19=>'nineteen'}
+
+def alphabetic_number_sort(array)
+  alpha_array = array.map do |num|                        # ["eight", "eighteen", "eleven", "fifteen", "five",...]
+    NUM_TO_ALPHA[num]
+  end
+
+  sorted_array = alpha_array.sort.map do |word|           # [8, 18, 11, 15, 5,...]
+    NUM_TO_ALPHA.key(word)
+  end
+end
+
+p alphabetic_number_sort((0..19).to_a) == [
+  8, 18, 11, 15, 5, 4, 14, 9, 19, 1, 7, 17,
+  6, 16, 10, 13, 3, 12, 2, 0
+]
+```
+------------------------
+
+### Exersise 9: ddaaiillyy ddoouubbllee
+
+----------------------INSTRUCTIONS-----------------------------------
+Write a method that takes a string argument and returns a new string that contains the value of the original string with all consecutive duplicate characters collapsed into a single character. You may not use String#squeeze or String#squeeze!.
+
+-------------------------PROBLEM--------------------------------------
+Input: 
+- String with repeated characters
+
+Output: 
+- New string without repeated characters
+
+--------------------------RULES-----------------------------------------
+Explicit:
+- cannot use squeeze method
+
+Implicit:
+- input string can have single or multiple subtrings
+- input substrings can have alphabetical and non-alphabetical characters
+- To be considered repeated char, must be a set of the same characters several times in a row
+- If input string has only one char, return it
+- If input string has no chars, return empty string
+
+-------------------------EXAMPLES--------------------------------------
+crunch('ddaaiillyy ddoouubbllee') == 'daily double'
+- 'dd' -> becomes 'd'
+- 'aa' -> becomes 'a'
+- 'ii' -> becomes 'i'
+- 'll' -> becomes 'l'
+- 'yy' -> becomes 'y'
+etc..
+
+crunch('4444abcabccba') == '4abcabcba'
+- '444' -> becomes '4'
+crunch('ggggggggggggggg') == 'g'
+- many times the same char becomes a single char of the same
+crunch('a') == 'a'
+crunch('') == ''
+
+---------------------------ALGORITHM-----------------------------------
+Goal:
+- remove duplicated consecutive characters (alpha and non-alpha) from input and return new string
+
+Edge cases:
+- if input string size == 1 return the string
+- if input string is empty return empty string
+
+Other cases:
+- convert input string into array for iteration
+- use gsub to substitute repetition of same letters by only one
+- use indexes to delete repeated characters
+- use a new collection (array) to add characters
+  - if next char is the same, don't add it
+- convert the array back to string
+- return the string  
+
+```ruby
+def crunch(string)
+  return string if string.empty? || string.size == 1
+  clean_array = []
+  
+  string.chars.each do |char|
+    clean_array << char unless clean_array.last == char
+  end
+
+  clean_array.join
+end
+
+p crunch('ddaaiillyy ddoouubbllee') == 'daily double'
+p crunch('4444abcabccba') == '4abcabcba'
+p crunch('ggggggggggggggg') == 'g'
+p crunch('a') == 'a'
+p crunch('') == ''
+
+# If squeeze method was allowed to use:
+
+def crunch(string)
+  return string if string.empty? || string.size == 1
+  new_str = string.squeeze
+end
+```
+------------------------
+
+### Exersise 10: Bannerizer
+
+---------------------INSTRUCTIONS-----------------------------------
+Write a method that will take a short line of text, and print it within a box.
+You may assume that the input will always fit in your terminal window.
+
+------------------------PROBLEM--------------------------------------
+Input: 
+- String
+Output:  
+- Same string printed within a box
+-------------------------RULES-----------------------------------------
+Explicit:
+- 
+Implicit:
+- to draw the box we'll use 
+- + symbol for the four corners 
+- - symbol for the upper and bottom parts 
+- | symbol for the side parts
+- between the text and the box there will always be one empty character in every part of the box
+- if the input string is empty, an empty box will be printed
+
+------------------------EXAMPLES--------------------------------------
+print_in_box('To boldly go where no one has gone before.')
++--------------------------------------------+
+|                                            |
+| To boldly go where no one has gone before. |
+|                                            |
++--------------------------------------------+
+
+print_in_box('')
++--+
+|  |
+|  |
+|  |
++--+
+--------------------------ALGORITHM-----------------------------------
+Goal:
+- print a box that encloses a string with one empty space per side
+
+- center method
+- puts method
+- string interpolation #{} 
+
+- print a line starting with + and end with + and has as many - as characters in string.size + 2
+- print the string with
+  - | on index 0 - 2
+  - | on index -1 + 2
+- print a line starting with + and end with + and has as many - as characters in string.size + 2
+
+```ruby
+def print_in_box(string)
+  size = string.size
+  puts "+#{'-'*(size+2)}+"
+  puts "|#{' '*(size+2)}|"
+  puts "| #{string} |"
+  puts "|#{' '*(size+2)}|"
+  puts "+#{'-'*(size+2)}+"
+end
+
+print_in_box('To boldly go where no one has gone before.')
+print_in_box('')
 ```

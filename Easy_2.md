@@ -647,33 +647,3 @@ array2.each { |x| puts x.object_id }
 # => 17945200
 # => 17945180
 ```
-
-=======
-
-#### My answer
-
-##### Rules / requirements
-
-##### Examples
-
-#### Data Structure
-
-#### Algorithm
-
-#### Code
-```ruby
-
-```
-
-#### School answer
-```ruby
-
-```
-
-#### Further exploration
-
-##### NOTES 
-
-```ruby
-
-```
